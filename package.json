@@ -1,6 +1,6 @@
 {
-  "name": "ZXCloudPlatform",
-  "version": "0.0.0",
+  "name": "zx-cloud-platform",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "babel-node index.js"
