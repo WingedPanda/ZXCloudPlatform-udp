@@ -1,7 +1,7 @@
 export default [
     {
-        id: "dht11-living-room",
-        name: "DHT11 in Living Room",
+        id: "01", // sensor-instance-id eg: 01
+        name: "sensor-01",
         desc: "A DHT11 sensor in my living room connected with WiFi via ESP8266, powered by USB connector.",
         meta: {
             model: {
@@ -21,16 +21,38 @@ export default [
         },
         monitor: {
             interval: 60 * 1000,
-            mode: "http-client-push",
-            mode: "udp",
-//            mode: "http-server-pull",
-            url: "http://localhost:3000/sensors/dht11-living-room/data"
-  //            url: "http://127.0.0.1:1919/dht11"
+            mode: "udp-client-push",
         },
         storage: {
             collection: {
-                name: "sensor-data-dht11-living-room"
+                name: "sensor-01" // 'sensor' + sensor instance id
             }
         }
-    }
+    },
+    {
+        "id" : "42",
+        "name" : "sensor-42",
+        "desc" : "采集加速度值信息，工作范围：±16g",
+        "meta" : {
+            "model" : {
+                "name" : "MPU6050",
+                "manufacturer" : "InvenSense"
+            },
+            "values" : {
+                "acceleration" : {
+                    "type" : "double",
+                    "unit" : "Gravitational acceleration"
+                }
+            }
+        },
+        "monitor" : {
+            "interval" : "2 * 1000",
+            "mode": "udp-client-push",
+        },
+        "storage" : {
+            "collection" : {
+                "name" : "sensor-42"
+            }
+        }
+      }
 ];
