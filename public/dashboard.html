@@ -63,7 +63,7 @@
                     </ul>-->
 
                     <ul class="right hide-on-med-and-down">
-                        <li><a href="javascript:void(0);" class="waves-effect waves-block waves-light translation-button"  data-activates="translation-dropdown"><img src="images/flag-icons/China.png" alt="China" /></a>
+                        <li><a href="javascript:void(0);" class="waves-effect waves-block waves-light translation-button"  data-activates="translation-dropdown"><img src="images/flag-icons/China.png" alt="USA" /></a>
                         </li>
                         <li><a href="javascript:void(0);" class="waves-effect waves-block waves-light toggle-fullscreen"><i class="mdi-action-settings-overscan"></i></a>
                         </li>
@@ -167,7 +167,7 @@
                                     </li>
                                     <li><a href="#">振动</a>
                                     </li>
-                                    <li><a href="monitor-wsd.html">温湿度</a>
+                                    <li><a href="#">温湿度</a>
                                     </li>
                                     <li><a href="#">腐蚀</a>
                                     </li>
@@ -239,7 +239,11 @@
 
                              <div class="card">
                               <div class="card-image">
-                               <img src="images/bridge.png">
+                               <div style="position:relative;background-image:url(images/bridge.png); background-position:center; background-repeat:repeat-y;height:330px;width:1017px;">
+                                  <div id='sensor-01' style="position:absolute; width:30px; height:30px; background: red; top: 200px; left: 500px">01</div>
+                                  <div id='sensor-42' style="position:absolute; width:30px; height:30px; background: red; top: 200px; left: 300px">41</div>
+
+                              </div>
                               </div>
 
                                   <div class="card-content">
@@ -249,9 +253,10 @@
                                         <img src="images/pingjia.png" alt="" />
                                       </div>
 
+
                                       </div>
 
-                                      <div class="col s12 m6 l3" style="color:#444">
+                                      <div class="col s12 m4 l4" style="color:#444">
                                         <span class="card-title"><b>健康状况：良好</b></span>
                                         <div class="">
                                           <span><b>流量：500辆/h</b></span>
@@ -392,7 +397,7 @@
                               <div class="col s3 m3 l3">
                                   <div class="card">
                                       <div class="card-content  blue-grey darken-1 white-text">
-                                          <p class="card-stats-title"><a href="monitor-wsd.html" style="color:white">温湿度</a> </p>
+                                          <p class="card-stats-title"><a href="monitor-wsd.html"> 温湿度</a></p>
 
                                            <span class="card-stats-number h4">80</span>
                                            <span>%</span>
@@ -501,62 +506,84 @@
     //        Materialize.toast('<span>You have new order.</span><a class="btn-flat yellow-text" href="#">Read<a>', 3000);
      //   }, 15000);
    // });
-
-
-    $(function() {
-      // Google Maps
-      $('#map-canvas').addClass('loading');
-      var latlng = new google.maps.LatLng(40.6700, -73.9400); // Set your Lat. Log. New York
-      var settings = {
-          zoom: 10,
-          center: latlng,
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-          mapTypeControl: false,
-          scrollwheel: false,
-          draggable: true,
-          styles: [{"featureType":"landscape.natural","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#e0efef"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"hue":"#1900ff"},{"color":"#c0e8e8"}]},{"featureType":"road","elementType":"geometry","stylers":[{"lightness":100},{"visibility":"simplified"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"visibility":"on"},{"lightness":700}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#7dcdcd"}]}],
-          mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
-          navigationControl: false,
-          navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
-      };
-      var map = new google.maps.Map(document.getElementById("map-canvas"), settings);
-
-      google.maps.event.addDomListener(window, "resize", function() {
-          var center = map.getCenter();
-          google.maps.event.trigger(map, "resize");
-          map.setCenter(center);
-          $('#map-canvas').removeClass('loading');
+       $(function() {
+      //sensor-01 click event handler
+      var $popup = $("<div id='card-alert' class='card grey darken-3'>" +
+                      "<div class='card-content white-text' style='width:150px;padding:10px 10px;'>" +
+                        "<div class='index'><div><span>温度：</span><span class='temp'></span><span>℃</span></div><div><span>湿度：</span><span class='hum'></span><span>%</span></div></div>" +
+                      "</div>" +
+                      "<button type='button' class='close white-text' aria-label='Close'>" +
+                        "<span aria-hidden='true'>×</span>" +
+                      "</button>" +
+                    "</div>");
+      $popup.appendTo('body');
+      $popup.css({
+        position: 'absolute',
+        zIndex: 1000,
+        display: 'none'
       });
 
-      var contentString =
-          '<div id="info-window">'+
-          '<p>18 McLuice Road, Vellyon Hills,<br /> New York, NY 10010<br /><a href="https://plus.google.com/102896039836143247306/about?gl=za&hl=en" target="_blank">Get directions</a></p>'+
-          '</div>';
-      var infowindow = new google.maps.InfoWindow({
-          content: contentString
+      $('div#card-alert').on('click', 'button', function(e){
+        debugger;
+        $popup.css({
+          display: 'none'
+        });
       });
 
-      var companyImage = new google.maps.MarkerImage('images/map-marker.png',
-          new google.maps.Size(36,62),// Width and height of the marker
-          new google.maps.Point(0,0),
-          new google.maps.Point(18,52)// Position of the marker
-      );
-
-      var companyPos = new google.maps.LatLng(40.6700, -73.9400);
-
-      var companyMarker = new google.maps.Marker({
-          position: companyPos,
-          map: map,
-          icon: companyImage,
-          title:"Shapeshift Interactive",
-          zIndex: 3});
-
-      google.maps.event.addListener(companyMarker, 'click', function() {
-          infowindow.open(map,companyMarker);
-          pageView('/#address');
+      $('div#sensor-01').on('click', function(e){
+          if ($popup.css("display") === 'none')
+          {
+            $popup.css({
+                left: e.pageX,
+                top: e.pageY,
+                display: 'block'
+            });
+            $popup.find("span.temp").text(20);
+            $popup.find("span.hum").text(67);
+          };
       });
+})
+
+$(function() {
+  //sensor-41 click event handler
+  var $popup = $("<div id='card-alert' class='card grey darken-3'>" +
+                  "<div class='card-content white-text' style='padding:10px 30px;'>" +
+                    "<div class='index'><div><span>x方向：</span><span class='x'></span><span>mm/s²</span></div><div><span>x方向：</span><span class='y'></span><span>mm/s²</span></div><div><span>x方向：</span><span class='z'></span><span>mm/s²</span></div>" +
+                  "</div>" +
+                  "<button type='button' class='close white-text' data-dismiss='alert' aria-label='Close'>" +
+                    "<span aria-hidden='true'>×</span>" +
+                  "</button>" +
+                "</div>");
+  $popup.appendTo('body');
+  $popup.css({
+    position: 'absolute',
+    zIndex: 1000,
+    display: 'none'
+  })
+
+  $('div#card-alert').on('click', 'button', function(e){
+    debugger;
+    $popup.css({
+      display: 'none'
     });
-    </script>
+  });
+
+  $('div#sensor-42').on('click', function(e){
+      if ($popup.css("display") === 'none')
+      {
+        $popup.css({
+            left: e.pageX,
+            top: e.pageY,
+            display: 'block'
+        });
+        $popup.find("span.x").text(1.654);
+        $popup.find("span.y").text(15.621);
+        $popup.find("span.z").text(-1.256);
+      };
+  });
+})
+
+</script>
 </body>
 
 </html>
