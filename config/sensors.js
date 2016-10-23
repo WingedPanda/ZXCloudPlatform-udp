@@ -39,14 +39,22 @@ export default [
                 "manufacturer" : "InvenSense"
             },
             "values" : {
-                "acceleration" : {
+                "x" : {
+                    "type" : "double",
+                    "unit" : "Gravitational acceleration"
+                },
+                "y" : {
+                    "type" : "double",
+                    "unit" : "Gravitational acceleration"
+                },
+                "z" : {
                     "type" : "double",
                     "unit" : "Gravitational acceleration"
                 }
             }
         },
         "monitor" : {
-            "interval" : "2 * 1000",
+            "interval" : 1 * 1000,
             "mode": "udp-client-push",
         },
         "storage" : {
