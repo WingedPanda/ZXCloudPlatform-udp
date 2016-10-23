@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>重新修改实时监测内容</title>
+    <link rel="stylesheet" href="css/monitor-wsd.css" media="screen" title="no title">
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/Chart.js"></script>
+	<script type="text/javascript" src="js/colock.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <div class="box">
+      <span class="item"><a href="#"><i class="material-icons">menu</i></a></span>
+      <span class="item"><h4>滁河大桥监测内容</h4></span>
+      <span class="item"><a href="#"><i class="material-icons">fast_rewind</i></a></span>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <div class="col s6">
+          <div class="tile1" onload="showtime()">
+            <div id="day"></div>
+            <div id="hour"></div>
+          </div>
+        </div>
+
+        <div class="col s6">
+          <div class="tile2">
+            <span class="number">24.123</span>
+            <span class="unit">℃</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="row">
+        <div class="col s2">
+          <div class="title1">
+            <span class="estimate">24.1</span>
+            <span class="unit">℃</span>
+          </div>
+
+        </div>
+        <div class="col s4">
+          <div class="title2">
+            <span class="plug-in">图标插件</span>
+          </div>
+
+        </div>
+        <div class="col s3">
+          <div class="title3">
+            <div class="day">
+              today
+            </div>
+            <div class="value">
+              <span>min:-10℃</span>
+              <span>max:40℃</span>
+              <span>mean:20℃</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="col s3">
+          <div class="title3">
+            <div class="day">
+              yesterday
+            </div>
+            <div class="value">
+              <span>min:-10℃</span>
+              <span>max:40℃</span>
+              <span>mean:20℃</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div  class="chart" style="width:50%">
+      <canvas id="myChart" width="500" height="300" ></canvas>
+      <script>
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+          datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255,99,132,1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero:true
+              }
+            }]
+          }
+        }
+      });
+      </script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<div style="margin: 20px;display: block;">
+	<canvas style="width: 600px; height: 300px" id="chart"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+
+<script>
+	var ws = new WebSocket('ws://127.0.0.1:8008/');
+	var data = {};
+
+	ws.onmessage = function(response){
+		var responseData = JSON.parse(response.data);
+
+		responseData
+			.map(function(row){
+				row.hour = new Date(row.hour).toISOString().slice(0, 16).replace('T',' ');
+				return row;
+			})
+			.forEach(function(row){
+				if(!data[row.country]){
+					data[row.country] = {};
+				}
+				data[row.country][row.hour] = row.count;
+			});
+		drawChart();
+	}
+
+	var chart = new Chart(document.getElementById('chart').getContext('2d'));
+	var chartLine;
+	function drawChart(){
+		if(chartLine){
+			return;
+			chartLine.destroy();
+		}
+		var palette = ['#CDA7C6','#7C7D9A','#8FBCCC'];
+		var chartData = {
+			labels: [],
+			datasets: []
+		};
+
+		for(var country in data){
+			var hours = data[country];
+			var counts = Object.keys(hours).map(function(x){return hours[x];});
+			var color = palette.pop();
+
+			var dataset = {
+				label: country,
+				data: counts,
+				pointColor: color,
+		        strokeColor: color,
+		        pointStrokeColor: '#fff',
+		        fillColor: "transparent",
+			};
+
+			if(chartData.labels.length < Object.keys(hours).length){
+				chartData.labels = Object.keys(hours);
+			}
+
+			chartData.datasets.push(dataset);
+		}
+
+		chartLine = chart.Line(chartData);
+	}
+</script>
+
+    </div>
+
+
+  </body>
+</html>
