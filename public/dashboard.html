@@ -242,9 +242,21 @@
                              <div class="card">
                               <div class="card-image">
                                <div style="position:relative;background-image:url(images/bridge.png); background-position:center; background-repeat:repeat-y;height:330px;width:1017px;">
-                                  <div id='sensor-01' style="position:absolute; width:20px; height:20px; background: none; top: 200px; left: 500px;color:#ffa000">&diams;01</div>
+                                <!--  <div id='sensor-01' style="position:absolute; width:20px; height:20px; background: none; top: 200px; left: 500px;color:#ffa000">&diams;01</div>
                                   <div id='sensor-42' style="position:absolute; width:20px; height:20px; background: none; top: 200px; left: 300px;color:#ffa000">&diams;41</div>
-
+-->
+                                  <div id='sensor-01' style="position:absolute;width:30px; height:30px; top: 220px; left: 300px;"><img src="images/wsd.png" alt="" style="width:18px; height:18px;"/></div>
+                                  <div id='' style="position:absolute; top: 200px; left: 305px;"><img src="images/wifi.png" alt="" /></div>
+                                  <div id='sensor-42' style="position:absolute;width:30px; height:30px;top: 210px; left: 500px;"><img src="images/jsd.png" alt="" style="width:18px; height:18px;"/></div>
+                                  <div id='' style="position:absolute; top: 195px; left: 505px;"><img src="images/wifi.png" alt="" /></div>
+                                  <div id='' style="position:absolute; top: 195px; left: 100px;"><img src="images/cz.png" alt="" /></div>
+                                  <div id='' style="position:absolute; top: 30px; right: 200px; "><img src="images/wsd.png" alt="" style="width:18px; height:18px;"/></div>
+                                  <div style="position:absolute; top: 30px; right: 120px; ">温度传感器
+                                  </div>
+                                  <div id='' style="position:absolute;top: 60px; right: 200px;"><img src="images/jsd.png" alt="" style="width:18px; height:18px;" /></div>
+                                  <div style="position:absolute; top: 60px; right: 110px; ">加速度传感器
+                                  </div>
+                                  <div id='' style="position:absolute; top: 83px; left: 60px;"><img src="images/shext.png" alt="" /></div>
                               </div>
                               </div>
 
@@ -399,7 +411,7 @@
                               <div class="col s3 m3 l3">
                                   <div class="card">
                                       <div class="card-content  blue-grey darken-1 white-text">
-                                          <p class="card-stats-title"><a href="monitor-wsd.html"> 温湿度</a></p>
+                                          <p class="card-stats-title"><a href="monitor-wsd.html" style="color:white;"> 温湿度</a></p>
 
                                            <span  class="card-stats-number h4" >15&deg;C</span>
                                            <script type="text/javascript">
@@ -537,7 +549,7 @@
       });
 
       $('div#card-alert').on('click', 'button', function(e){
-        debugger;
+    //    debugger;
         $popup.css({
           display: 'none'
         });
@@ -575,7 +587,7 @@ $(function() {
   })
 
   $('div#card-alert').on('click', 'button', function(e){
-    debugger;
+  //  debugger;
     $popup.css({
       display: 'none'
     });
