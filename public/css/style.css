@@ -508,7 +508,7 @@ input.header-search-input:focus {
 
 .translation-button img {
   position: relative;
-  top: 12px;
+  top: 0px;
 }
 
 #translation-dropdown .language-select {
