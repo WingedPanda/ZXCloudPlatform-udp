@@ -518,13 +518,13 @@ input.header-search-input:focus {
 
 .notification-badge {
   position: relative;
-  right: 5px;
+  right: 3px;
   top: -20px;
   color: #ffffff;
   background-color: #FF4081;
   margin: 0 -.8em;
   border-radius: 50%;
-  padding: 4px 5px;
+  padding: 1px 5px;
 }
 
 #notifications-dropdown h5 {
