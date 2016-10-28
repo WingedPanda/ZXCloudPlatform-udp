@@ -54,7 +54,7 @@ export default [
             }
         },
         "monitor" : {
-            "interval" : 1 * 1000,
+            "interval" : 1000,
             "mode": "udp-client-push",
         },
         "storage" : {

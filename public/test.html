@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/Chart.js"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <div id='content'>
+        <canvas id='chart'></canvas>
+    </div>
+</body>
+<script>
+
+    function calculateStartTime(oDate)
+    {
+        oDate.setMinutes(0);
+        oDate.setSeconds(0);
+        var iTime = oDate.getTime();
+        var from = new Date(iTime);
+        return from;
+    }
+
+    function generateLabels(from, to)
+    {
+        var labels = [];
+        for (var i = from.getTime(); i < to.getTime();  i += 60 * 1000)
+        {
+            var timeslot = new Date(i);
+            labels.push(timeslot.getHours() + ":" + timeslot.getMinutes() + ":" + timeslot.getSeconds());
+        }
+        return labels;
+    }
+
+    function format(data, fieldName)
+    {
+        var collection = [];
+        data.forEach(function(o){
+            if (o[fieldName] === Number.MIN_SAFE_INTEGER)
+            {
+                collection.push(null);
+            }
+            else {
+                collection.push(o[fieldName]);
+            }
+        });
+        return collection;
+    }
+
+    // var fromMock = new Date(1477220400000.0);
+    // var toMock = new Date(1477224000000.0);
+
+    var from = calculateStartTime(new Date());
+    var to  = new Date(from.getTime() + 60 * 60 * 1000);
+    var labels = generateLabels(from, to);
+
+
+    $.ajax({
+        url: '/api/sensor/01/data',
+        dataType: 'json',
+        context: window,
+        async: false,
+        data: {
+          from: from.toJSON(),
+          to: to.toJSON()
+        }
+    }).done(function(e) {
+      var ctx = document.getElementById('chart').getContext('2d');
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+               {
+                   label: '温度',
+                   fillColor: "rgba(220,220,220,0.2)",
+                   strokeColor: "rgba(220,220,220,1)",
+                   pointColor: "rgba(220,220,220,1)",
+                   pointStrokeColor: "#fff",
+                   data: format(e, 'temperature')
+               },
+               {
+                   label: '湿度',
+                   fillColor: "rgba(151,187,205,0.2)",
+                   strokeColor: "rgba(151,187,205,1)",
+                   pointColor: "rgba(151,187,205,1)",
+                   pointStrokeColor: "#fff",
+                   data: format(e, 'humidity')
+               }
+           ]
+        }
+      });
+    });
+
+</script>
+
+</html>
