@@ -1,0 +1,19 @@
+*
+footer
+{
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50px;
+    background-color: #00bcd4;
+}
+h3,
+.h3 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-sidenav {
+  margin-top: 6px;
+}

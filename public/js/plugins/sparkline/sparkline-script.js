@@ -1,6 +1,6 @@
 // Bar chart ( New Clients)
 
-    $("#clients-bar").sparkline([70, 80, 65, 78, 58, 80, 78, 80, 70, 50, 75, 65, 80, 70, 65, 90, 65, 80, 70, 65, 90], {
+    $("#clients-bar").sparkline([70, 80, 65, 78, 58, 80, 78, 80, 70, 50, 75, 65, 80, 75], {
         type: 'bar',
         height: '25',
         barWidth: 7,
@@ -20,20 +20,20 @@ $("#invoice-line").sparkline([5, 6, 7, 9, 9, 5, 3, 2, 2, 4, 6, 7, 5, 6, 7, 9, 9,
     height: '25',
     lineWidth: 2,
     lineColor: '#E1D0FF',
-    fillColor: 'rgba(233, 30, 99, 0.4)',
+    fillColor: '#039be5',
     highlightSpotColor: '#E1D0FF',
     highlightLineColor: '#E1D0FF',
     minSpotColor: '#f44336',
     maxSpotColor: '#4caf50',
     spotColor: '#E1D0FF',
     spotRadius: 4,
-    
+
    // //tooltipFormat: $.spformat('{{value}}', 'tooltip-class')
 });
 
 
 // Tristate chart (Today Profit)
-$("#profit-tristate").sparkline([2, 3, 0, 4, -5, -6, 7, -2, 3, 0, 2, 3, -1, 0, 2, 3, 3, -1, 0, 2, 3], {
+$("#profit-tristate").sparkline([2, 3, 0, 4, -5, -6, 7, -2, 3, 0, 2, 3, -1, 2], {
     type: 'tristate',
     width: '100%',
     height: '25',
@@ -46,7 +46,7 @@ $("#profit-tristate").sparkline([2, 3, 0, 4, -5, -6, 7, -2, 3, 0, 2, 3, -1, 0, 2
 });
 
 // Bar + line composite charts (Total Sales)
-$('#sales-compositebar').sparkline([4, 6, 7, 7, 4, 3, 2, 3, 1, 4, 6, 5, 9, 4, 6, 7, 7, 4, 6, 5, 9, 4, 6, 7], {
+$('#sales-compositebar').sparkline([4, 6, 7, 7, 4, 3, 2, 3, 1, 4, 6, 5, 9, 4, 6, 7], {
     type: 'bar',
     barColor: '#F6CAFD',
     height: '25',
@@ -55,7 +55,7 @@ $('#sales-compositebar').sparkline([4, 6, 7, 7, 4, 3, 2, 3, 1, 4, 6, 5, 9, 4, 6,
     barSpacing: 2,
     //tooltipFormat: $.spformat('{{value}}', 'tooltip-class')
 });
-$('#sales-compositebar').sparkline([4, 1, 5, 7, 9, 9, 8, 8, 4, 2, 5, 6, 7], {
+$('#sales-compositebar').sparkline([4, 9, 5, 3, 3, 2, 8, 8, 4], {
     composite: true,
     type: 'line',
     width: '100%',
@@ -192,4 +192,52 @@ $("#pie-chart-sample").sparkline([50,60,80,110], {
     height: '150',
     //tooltipFormat: $.spformat('{{value}}', 'tooltip-class'),
     sliceColors: ['#f4511e','#ffea00','#c6ff00','#00e676','#1de9b6','#00e5ff','#651fff','#f50057']
+});
+
+$("#suoliimg").sparkline([70, 80, 65, 78, 58, 80, 78, 80, 70, 50, 75, 65, 80, 70], {
+    type: 'bar',
+    height: '25',
+    barWidth: 7,
+    barSpacing: 4,
+    barColor: '#C7FCC9',
+    negBarColor: '#81d4fa',
+    zeroColor: '#81d4fa',
+});
+
+$("#zhendongimg").sparkline([5, -5, -1, 9, 15, 2, 3, 1, -10,6, 6, 7, 3, -1, 15, -10, 3, 1, 5,-6, 6, 7, 3, -1,], {
+    type: 'line',
+    width: '100%',
+    height: '30',
+    lineWidth: 2,
+    lineColor: '#E1D0FF',
+    fillColor: '#d81b60',
+});
+
+// Tristate chart (Today Profit)
+$("#wenshiduimg").sparkline([0, 1, 0, 4, -2, 5, 3, -2, 3, 0, 2, 3, -1, 5], {
+    type: 'tristate',
+    width: '100%',
+    height: '25',
+    posBarColor: '#B9DBEC',
+    negBarColor: '#C7EBFC',
+    barWidth: 7,
+    barSpacing: 4,
+    zeroAxis: false,
+    //tooltipFormat: $.spformat('{{value}}', 'tooltip-class')
+});
+
+// Line chart ( New Invoice)
+$("#fushiimg").sparkline([5, 6, 7, 9, 9, 5, 3, 2, 2, 4, 6, 7, 5, 6, 7, 9, 9, 5], {
+    type: 'line',
+    width: '100%',
+    height: '25',
+    lineWidth: 2,
+    lineColor: '#E1D0FF',
+    fillColor: '#f4511e',
+    highlightSpotColor: '#E1D0FF',
+    highlightLineColor: '#E1D0FF',
+    minSpotColor: '#f44336',
+    maxSpotColor: '#4caf50',
+
+   // //tooltipFormat: $.spformat('{{value}}', 'tooltip-class')
 });
