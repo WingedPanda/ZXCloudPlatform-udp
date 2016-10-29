@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/Chart.js"></script>
+    <script type="text/javascript" src="lib/socket.io.js"></script>
 
     <title>Document</title>
 </head>
@@ -17,15 +18,49 @@
     </div>
 </body>
 <script>
+    var socket = io('http://localhost:3000/api/sensor/01');
+    socket.on('valueChanged', function (data) {
+        var lastUpdatedTime = new Date(data.lastUpdatedTime);
+        lastUpdatedTime.setSeconds(0);
+        lastUpdatedTime.setMilliseconds(0);
+
+        var minutes;
+        if (lastUpdatedTime >= from && lastUpdatedTime < to)
+        {
+            minutes = lastUpdatedTime.getMinutes();
+            if (temperatures[minutes] == null && humidities[minutes] == null)
+            {
+                temperatures[minutes] = data.value.temperature;
+                humidities[minutes] = data.value.humidity;
+                myChart.update();
+            }
+        }
+        else if (lastUpdatedTime >= to)
+        {
+            to = lastUpdatedTime;
+            from = new Date(from.getTime() + 60 * 1000);
+            labels = generateLabels(from, to);
+            myChart.update();
+
+        }
+    }.bind(window));
 
     function calculateStartTime(oDate)
     {
         oDate.setMinutes(0);
         oDate.setSeconds(0);
+        oDate.setMilliseconds(0);
         var iTime = oDate.getTime();
         var from = new Date(iTime);
         return from;
     }
+
+
+    function generateLabel(timeslot)
+    {
+        return timeslot.getHours() + ":" + timeslot.getMinutes() + ":" + timeslot.getSeconds()
+    }
+
 
     function generateLabels(from, to)
     {
@@ -33,7 +68,7 @@
         for (var i = from.getTime(); i < to.getTime();  i += 60 * 1000)
         {
             var timeslot = new Date(i);
-            labels.push(timeslot.getHours() + ":" + timeslot.getMinutes() + ":" + timeslot.getSeconds());
+            labels.push(generateLabel(timeslot));
         }
         return labels;
     }
@@ -53,13 +88,13 @@
         return collection;
     }
 
-    // var fromMock = new Date(1477220400000.0);
-    // var toMock = new Date(1477224000000.0);
 
+    var myChart;
     var from = calculateStartTime(new Date());
     var to  = new Date(from.getTime() + 60 * 60 * 1000);
     var labels = generateLabels(from, to);
-
+    var temperatures = [];
+    var humidities = [];
 
     $.ajax({
         url: '/api/sensor/01/data',
@@ -72,7 +107,11 @@
         }
     }).done(function(e) {
       var ctx = document.getElementById('chart').getContext('2d');
-      var myChart = new Chart(ctx, {
+
+      temperatures = format(e, 'temperature');
+      humidities = format(e, 'humidity');
+
+      myChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -83,7 +122,7 @@
                    strokeColor: "rgba(220,220,220,1)",
                    pointColor: "rgba(220,220,220,1)",
                    pointStrokeColor: "#fff",
-                   data: format(e, 'temperature')
+                   data: temperatures
                },
                {
                    label: '湿度',
@@ -91,7 +130,7 @@
                    strokeColor: "rgba(151,187,205,1)",
                    pointColor: "rgba(151,187,205,1)",
                    pointStrokeColor: "#fff",
-                   data: format(e, 'humidity')
+                   data: humidities
                }
            ]
         }
