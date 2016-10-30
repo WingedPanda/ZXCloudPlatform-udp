@@ -41,6 +41,8 @@
             {
                 temperatures[minutes] = data.value.temperature;
                 humidities[minutes] = data.value.humidity;
+                
+                generateLabels(from, to);
                 myChart.update();
             }
         }
@@ -48,13 +50,12 @@
         {
             to = new Date(lastUpdatedTime.getTime());
             from = new Date(from.getTime() + 60 * 1000);
-            labels = generateLabels(from, to);
+            generateLabels(from, to);
             temperatures.shift();
             temperatures.push(data.value.temperature);
 
             humidities.shift();
             humidities.push(data.value.humidity);
-            debugger;
             myChart.update();
         }
     }.bind(window));
@@ -80,6 +81,7 @@
      */
     function generateLabels(from, to)
     {
+        labels.splice(0, labels.length);
         for (var i = from.getTime(); i <= to.getTime();  i += 60 * 1000)
         {
             var timeslot = new Date(i);
