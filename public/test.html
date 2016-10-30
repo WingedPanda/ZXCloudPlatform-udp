@@ -18,6 +18,12 @@
     </div>
 </body>
 <script>
+    var myChart;
+    var from = calculateStartTime(new Date());
+    var to  = new Date(from.getTime() + 60 * 60 * 1000);
+    var labels = generateLabels(from, to);
+    var temperatures = [];
+    var humidities = [];
     var socket = io('http://localhost:3000/api/sensor/01');
     socket.on('valueChanged', function (data) {
         var lastUpdatedTime = new Date(data.lastUpdatedTime);
@@ -37,11 +43,16 @@
         }
         else if (lastUpdatedTime >= to)
         {
-            to = lastUpdatedTime;
+            to = new Date(lastUpdatedTime.getTime() + 60 * 1000);
             from = new Date(from.getTime() + 60 * 1000);
             labels = generateLabels(from, to);
-            myChart.update();
+            temperatures.shift();
+            temperatures.push(data.value.temperature);
 
+            humidities.shift();
+            humidities.push(data.value.humidity);
+
+            myChart.update();
         }
     }.bind(window));
 
@@ -58,7 +69,7 @@
 
     function generateLabel(timeslot)
     {
-        return timeslot.getHours() + ":" + timeslot.getMinutes() + ":" + timeslot.getSeconds()
+        return timeslot.toTimeString().split(' ')[0]
     }
 
 
@@ -89,12 +100,7 @@
     }
 
 
-    var myChart;
-    var from = calculateStartTime(new Date());
-    var to  = new Date(from.getTime() + 60 * 60 * 1000);
-    var labels = generateLabels(from, to);
-    var temperatures = [];
-    var humidities = [];
+
 
     $.ajax({
         url: '/api/sensor/01/data',
@@ -118,21 +124,34 @@
             datasets: [
                {
                    label: '温度',
-                   fillColor: "rgba(220,220,220,0.2)",
-                   strokeColor: "rgba(220,220,220,1)",
-                   pointColor: "rgba(220,220,220,1)",
-                   pointStrokeColor: "#fff",
-                   data: temperatures
+                   borderColor: "#00bcd4",
+                   backgroundColor: "rgba(0, 188, 212, 0.3)",
+                   data: temperatures,
+                   yAxisID: "y-axis-0"
                },
                {
                    label: '湿度',
-                   fillColor: "rgba(151,187,205,0.2)",
-                   strokeColor: "rgba(151,187,205,1)",
-                   pointColor: "rgba(151,187,205,1)",
-                   pointStrokeColor: "#fff",
-                   data: humidities
+                   borderColor: '#40a7ff',
+                   backgroundColor: 'rgba(64, 167, 255, 0.3)',
+                   data: humidities,
+                   yAxisID: "y-axis-1"
                }
            ]
+        },
+        options: {
+            scales: {
+              yAxes: [{
+                position: "left",
+                label: "摄氏度",
+                stacked: true,
+                "id": "y-axis-0"
+              }, {
+                position: "right",
+                stacked: true,
+                label: "%",
+                "id": "y-axis-1"
+              }]
+            }
         }
       });
     });
