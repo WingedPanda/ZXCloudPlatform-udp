@@ -14,7 +14,7 @@
 
 <body>
     <div id='content'>
-        <canvas id='chart'></canvas>
+        <canvas id='chart' style='height: 300px'></canvas>
     </div>
 </body>
 <script>
@@ -41,7 +41,7 @@
             {
                 temperatures[minutes] = data.value.temperature;
                 humidities[minutes] = data.value.humidity;
-                
+
                 generateLabels(from, to);
                 myChart.update();
             }
@@ -144,7 +144,7 @@
            ]
         },
         options: {
-            responsive: true,
+            responsive: false,
             scales: {
               yAxes: [{
                 position: "left",
