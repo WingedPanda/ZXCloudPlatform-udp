@@ -21,7 +21,7 @@
     <link href="css/layouts/style-fullscreen.css" type="text/css" rel="stylesheet" media="screen,projection">
     <!-- Custome CSS-->
     <link href="css/custom/custom.css" type="text/css" rel="stylesheet" media="screen,projection">
-<link rel="stylesheet" href="css/realtime/monitor-jsd.css" media="screen" title="no title">
+<link rel="stylesheet" href="css/realtime/monitor-wd.css" media="screen" title="no title">
 
 <link href="js/plugins/perfect-scrollbar/perfect-scrollbar.css" type="text/css" rel="stylesheet" media="screen,projection">
 <link href="js/plugins/jvectormap/jquery-jvectormap.css" type="text/css" rel="stylesheet" media="screen,projection">
@@ -219,17 +219,31 @@
     <p style="font-size:20px;margin:20px 10px;">振动加速度3 <img src="images/arrow-rignt.png" alt="" style="height:20px;" />
     </p>
     <div class="row" style="background-color:#1c334f; margin-bottom:20px;">
-      <div class="col s2 center" style="height:220px;width:220px;">
-        <img style="display:block;width:100%;" src="images/619622287380301789.png" alt="" style="height:200px;width:220px; margin-top:10px;"/>
+      <div class="col s2 " >
+        <div class="col s2 center" style="margin:20px 10px 5px 10px;position:relative;background:url(images/flottime.png);background-size:237px 194px;height:194px;width:237px;">
+                <div class="center" style="position:absolute;width:30px; height:30px; top: 80px; left: 50px;">
+                  <span style="font-size:54px;color:#6aff7d">15</span>
+                </div>
+                <div class="center" style="position:absolute;width:30px; height:30px; top: 150px; left: 80px;">
+                  <span style="font-size:24px;">℃</span>
+                </div>
+                <div class="center" style="position:absolute;width:30px; height:30px; top: 190px; left: 10px;">
+                  <span style="font-size:24px;color:#6aff7d">-20</span>
+                </div>
+                <div class="center" style="position:absolute;width:30px; height:30px; top: 190px; left: 170px;">
+                  <span style="font-size:24px;color:#ff5665">70</span>
+                </div>
+               <!-- <img src="images/flottime.png" alt="" style="height:200px;width:220px; margin-top:10px;"/> -->
+              </div>
       </div>
       <div class="col s5" style="height:200px;margin:20px 0px;">
         <p style="font-size:30px;color:#b9e5ef; margin-left:35px;">
-          今日截止当前（mm/s²）
+          今日截止当前（℃）
         </p>
         <div class="box">
           <span class="statistic" style="height:120px;">
             <p class="num center">
-              389.2
+              15
             </p>
             <p class="unit center">
               平均
@@ -237,7 +251,7 @@
           </span>
           <span class="statistic" style="height:120px;">
             <p class="num center">
-              140.7
+              6
             </p>
             <p class="unit center">
               最小值
@@ -245,7 +259,7 @@
           </span>
           <span class="statistic" style="height:120px;">
             <p class="num center">
-              828.9
+              20
             </p>
             <p class="unit center">
               最大值
@@ -256,12 +270,12 @@
       </div>
       <div class="col s5 cut" style="height:200px;margin:20px 0px;">
         <p style="font-size:30px;color:#b9e5ef; margin-left:35px;">
-          昨日（mm/s²）
+          昨日（℃）
         </p>
         <div class="box">
           <span class="statistic" style="height:120px;">
             <p class="num center">
-              404.2
+              13
             </p>
             <p class="unit center">
               平均
@@ -269,7 +283,7 @@
           </span>
           <span class="statistic" style="height:120px;">
             <p class="num center">
-              122.9
+              7
             </p>
             <p class="unit center">
               最小值
@@ -277,7 +291,7 @@
           </span>
           <span class="statistic" style="height:120px;">
             <p class="num center">
-              792.5
+              18
             </p>
             <p class="unit center">
               最大值
@@ -291,46 +305,55 @@
 
   </div>
   <div id='content'>
-      <canvas id='chart'></canvas>
+      <canvas id='chart'  height="400px" width="1500px"></canvas>
   </div>
   <script>
       var myChart;
       var from = calculateStartTime(new Date());
-      var to  = new Date(from.getTime() + 60 * 60 * 1000);
-      var labels = generateLabels(from, to);
+      var to  = new Date(from.getTime() + 59 * 60 * 1000);
       var temperatures = [];
       var humidities = [];
-      var socket = io('http://localhost:3000/api/sensor/01');
-      socket.on('valueChanged', function (data) {
+      var labels = [];
+
+      generateLabels(from, to);
+
+      setInterval(function(){
+        $.ajax({
+          url: '/api/sensor/01/value',
+          context: window,
+          dataType: 'json'
+        }).done(function(data){
           var lastUpdatedTime = new Date(data.lastUpdatedTime);
           lastUpdatedTime.setSeconds(0);
           lastUpdatedTime.setMilliseconds(0);
 
           var minutes;
-          if (lastUpdatedTime >= from && lastUpdatedTime < to)
+          if (lastUpdatedTime >= from && lastUpdatedTime <= to)
           {
               minutes = lastUpdatedTime.getMinutes();
               if (temperatures[minutes] == null && humidities[minutes] == null)
               {
-                  temperatures[minutes] = data.value.temperature;
-                  humidities[minutes] = data.value.humidity;
+                  temperatures[minutes] = data.temperature;
+                  humidities[minutes] = data.humidity;
+
+                  generateLabels(from, to);
                   myChart.update();
               }
           }
-          else if (lastUpdatedTime >= to)
+          else if (lastUpdatedTime > to)
           {
-              to = new Date(lastUpdatedTime.getTime() + 60 * 1000);
+              to = new Date(lastUpdatedTime.getTime());
               from = new Date(from.getTime() + 60 * 1000);
-              labels = generateLabels(from, to);
+              generateLabels(from, to);
               temperatures.shift();
-              temperatures.push(data.value.temperature);
+              temperatures.push(data.temperature);
 
               humidities.shift();
-              humidities.push(data.value.humidity);
-
+              humidities.push(data.humidity);
               myChart.update();
           }
-      }.bind(window));
+        });
+      }.bind(window), 1000 * 10)
 
       function calculateStartTime(oDate)
       {
@@ -348,16 +371,17 @@
           return timeslot.toTimeString().split(' ')[0]
       }
 
-
+      /**
+       * 生成 x 轴刻度
+       */
       function generateLabels(from, to)
       {
-          var labels = [];
-          for (var i = from.getTime(); i < to.getTime();  i += 60 * 1000)
+          labels.splice(0, labels.length);
+          for (var i = from.getTime(); i <= to.getTime();  i += 60 * 1000)
           {
               var timeslot = new Date(i);
               labels.push(generateLabel(timeslot));
           }
-          return labels;
       }
 
       function format(data, fieldName)
@@ -415,6 +439,7 @@
              ]
           },
           options: {
+              responsive: false,
               scales: {
                 yAxes: [{
                   position: "left",
