@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/Chart.js"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <div id='content'>
+        <canvas id='chart'></canvas>
+    </div>
+</body>
+<script>
+    var myChart;
+    var from = calculateStartTime(new Date());
+    var to  = new Date(from.getTime() + 59 * 60 * 1000);
+    var temperatures = [];
+    var humidities = [];
+    var labels = [];
+
+    generateLabels(from, to);
+
+    setInterval(function(){
+      $.ajax({
+        url: '/api/sensor/01/value',
+        context: window,
+        dataType: 'json'
+      }).done(function(data){
+        var lastUpdatedTime = new Date(data.lastUpdatedTime);
+        lastUpdatedTime.setSeconds(0);
+        lastUpdatedTime.setMilliseconds(0);
+
+        var minutes;
+        if (lastUpdatedTime >= from && lastUpdatedTime <= to)
+        {
+            minutes = lastUpdatedTime.getMinutes();
+            if (temperatures[minutes] == null && humidities[minutes] == null)
+            {
+                temperatures[minutes] = data.temperature;
+                humidities[minutes] = data.humidity;
+
+                generateLabels(from, to);
+                myChart.update();
+            }
+        }
+        else if (lastUpdatedTime > to)
+        {
+            to = new Date(lastUpdatedTime.getTime());
+            from = new Date(from.getTime() + 60 * 1000);
+            generateLabels(from, to);
+            temperatures.shift();
+            temperatures.push(data.temperature);
+
+            humidities.shift();
+            humidities.push(data.humidity);
+            myChart.update();
+        }
+      });
+    }.bind(window), 1000 * 10)
+
+    function calculateStartTime(oDate)
+    {
+        oDate.setMinutes(0);
+        oDate.setSeconds(0);
+        oDate.setMilliseconds(0);
+        var iTime = oDate.getTime();
+        var from = new Date(iTime);
+        return from;
+    }
+
+
+    function generateLabel(timeslot)
+    {
+        return timeslot.toTimeString().split(' ')[0]
+    }
+
+    /**
+     * 生成 x 轴刻度
+     */
+    function generateLabels(from, to)
+    {
+        labels.splice(0, labels.length);
+        for (var i = from.getTime(); i <= to.getTime();  i += 60 * 1000)
+        {
+            var timeslot = new Date(i);
+            labels.push(generateLabel(timeslot));
+        }
+    }
+
+    function format(data, fieldName)
+    {
+        var collection = [];
+        data.forEach(function(o){
+            if (o[fieldName] === Number.MIN_SAFE_INTEGER)
+            {
+                collection.push(null);
+            }
+            else {
+                collection.push(o[fieldName]);
+            }
+        });
+        return collection;
+    }
+
+
+
+
+    $.ajax({
+        url: '/api/sensor/01/data',
+        dataType: 'json',
+        context: window,
+        async: false,
+        data: {
+          from: from.toJSON(),
+          to: to.toJSON()
+        }
+    }).done(function(e) {
+      var ctx = document.getElementById('chart').getContext('2d');
+
+      temperatures = format(e, 'temperature');
+      humidities = format(e, 'humidity');
+
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+               {
+                   label: '温度',
+                   borderColor: "#00bcd4",
+                   backgroundColor: "rgba(0, 188, 212, 0.3)",
+                   data: temperatures,
+                   yAxisID: "y-axis-0"
+               },
+               {
+                   label: '湿度',
+                   borderColor: '#40a7ff',
+                   backgroundColor: 'rgba(64, 167, 255, 0.3)',
+                   data: humidities,
+                   yAxisID: "y-axis-1"
+               }
+           ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+              yAxes: [{
+                position: "left",
+                label: "摄氏度",
+                stacked: true,
+                "id": "y-axis-0"
+              }, {
+                position: "right",
+                stacked: true,
+                label: "%",
+                "id": "y-axis-1"
+              }]
+            }
+        }
+      });
+    });
+
+</script>
+
+</html>
