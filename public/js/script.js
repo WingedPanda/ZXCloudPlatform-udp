@@ -111,6 +111,6 @@ function updateValue(id, startValue, multiplier, appRuns){
 	// calculation of the value
 	var value = (startValue + Math.random() - 0.5 ).toFixed(2);
 
-	document.getElementById(id).innerHTML = value.toString();
+//	document.getElementById(id).innerHTML = value.toString();
 }
 // ############################
