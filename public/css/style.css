@@ -190,6 +190,7 @@ li.home:before {
   font-weight: 500;
   letter-spacing: 1px;
   text-transform: uppercase;
+  color: white;
 }
 
 .valign-demo {
@@ -628,6 +629,7 @@ ul.side-nav.leftside-navigation li.active {
 ul.side-nav.leftside-navigation li a {
   font-size: 14px;
   font-weight: 400;
+  color: white;
 }
 
 ul.side-nav.leftside-navigation li.user-details {
