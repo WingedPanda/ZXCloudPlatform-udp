@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/Chart.js"></script>
+    <script type="text/javascript" src="js/socket.io.js"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <div id='content'>
+        <canvas id='chart'></canvas>
+    </div>
+</body>
+<script>
+    var myChart;
+    var from = calculateStartTime(new Date());
+    var to  = new Date(from.getTime() + 60 * 60 * 1000);
+    var labels = generateLabels(from, to);
+    var x = [];
+    var y = [];
+    var z = [];
+    var socket = io('http://localhost:3000/api/sensor/41');
+    socket.on('valueChanged', function (data) {
+        var lastUpdatedTime = new Date(data.lastUpdatedTime);
+        lastUpdatedTime.setSeconds(0);
+        lastUpdatedTime.setMilliseconds(0);
+
+        var minutes;
+        if (lastUpdatedTime >= from && lastUpdatedTime < to)
+        {
+            minutes = lastUpdatedTime.getMinutes();
+            seconds = lastUpdatedTime.getSeconds();
+            if (x[seconds] == null && y[seconds] == null && z[seconds] == null)
+            {
+                x[seconds] = data.value.x;
+                y[seconds] = data.value.y;
+                z[seconds] = data.value.z;
+                myChart.update();
+            }
+        }
+        else if (lastUpdatedTime >= to)
+        {
+            to = new Date(lastUpdatedTime.getTime() + 60 * 1000);
+            from = new Date(from.getTime() + 60 * 1000);
+            labels = generateLabels(from, to);
+            x.shift();
+            x.push(data.value.x);
+
+            y.shift();
+            y.push(data.value.y);
+
+            z.shift();
+            z.push(data.value.z);
+
+            myChart.update();
+        }
+    }.bind(window));
+
+    function calculateStartTime(oDate)
+    {
+        oDate.setMinutes(0);
+        oDate.setSeconds(0);
+        oDate.setMilliseconds(0);
+        var iTime = oDate.getTime();
+        var from = new Date(iTime);
+        return from;
+    }
+
+
+    function generateLabel(timeslot)
+    {
+        return timeslot.toTimeString().split(' ')[0]
+    }
+
+
+    function generateLabels(from, to)
+    {
+        var labels = [];
+        for (var i = from.getTime(); i < to.getTime();  i += 1 * 1000)
+        {
+            var timeslot = new Date(i);
+            labels.push(generateLabel(timeslot));
+        }
+        return labels;
+    }
+
+    function format(data, fieldName)
+    {
+        var collection = [];
+        data.forEach(function(o){
+            if (o[fieldName] === Number.MIN_SAFE_INTEGER)
+            {
+                collection.push(null);
+            }
+            else {
+                collection.push(o[fieldName]);
+            }
+        });
+        return collection;
+    }
+
+
+
+
+    $.ajax({
+        url: '/api/sensor/41/data',
+        dataType: 'json',
+        context: window,
+        async: false,
+        data: {
+          from: from.toJSON(),
+          to: to.toJSON()
+        }
+    }).done(function(e) {
+      var ctx = document.getElementById('chart').getContext('2d');
+
+      x = format(e, 'x');
+      y = format(e, 'y');
+      z = format(e, 'z');
+
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+               {
+                   label: 'x',
+                   borderColor: "#00bcd4",
+                   backgroundColor: "rgba(0, 188, 212, 0.3)",
+                   data: x,
+                   yAxisID: "y-axis-0"
+               },
+               {
+                   label: 'y',
+                   borderColor: '#40a7ff',
+                   backgroundColor: 'rgba(64, 167, 255, 0.3)',
+                   data: y,
+                   yAxisID: "y-axis-0"
+               },
+               {
+                   label: 'z',
+                   borderColor: '#40a7ff',
+                   backgroundColor: 'rgba(64, 167, 255, 0.3)',
+                   data: y,
+                   yAxisID: "y-axis-0"
+               }
+           ]
+        },
+        options: {
+            scales: {
+              yAxes: [{
+                position: "left",
+                label: "mm/s2",
+                stacked: true,
+                "id": "y-axis-0"
+              }]
+            }
+        }
+      });
+    });
+
+</script>
+
+</html>
