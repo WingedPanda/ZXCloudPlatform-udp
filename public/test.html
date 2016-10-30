@@ -20,10 +20,13 @@
 <script>
     var myChart;
     var from = calculateStartTime(new Date());
-    var to  = new Date(from.getTime() + 60 * 60 * 1000);
-    var labels = generateLabels(from, to);
+    var to  = new Date(from.getTime() + 59 * 60 * 1000);
     var temperatures = [];
     var humidities = [];
+    var labels = [];
+
+    generateLabels(from, to);
+
     var socket = io('http://localhost:3000/api/sensor/01');
     socket.on('valueChanged', function (data) {
         var lastUpdatedTime = new Date(data.lastUpdatedTime);
@@ -31,7 +34,7 @@
         lastUpdatedTime.setMilliseconds(0);
 
         var minutes;
-        if (lastUpdatedTime >= from && lastUpdatedTime < to)
+        if (lastUpdatedTime >= from && lastUpdatedTime <= to)
         {
             minutes = lastUpdatedTime.getMinutes();
             if (temperatures[minutes] == null && humidities[minutes] == null)
@@ -41,9 +44,9 @@
                 myChart.update();
             }
         }
-        else if (lastUpdatedTime >= to)
+        else if (lastUpdatedTime > to)
         {
-            to = new Date(lastUpdatedTime.getTime() + 60 * 1000);
+            to = new Date(lastUpdatedTime.getTime());
             from = new Date(from.getTime() + 60 * 1000);
             labels = generateLabels(from, to);
             temperatures.shift();
@@ -51,7 +54,7 @@
 
             humidities.shift();
             humidities.push(data.value.humidity);
-
+            debugger;
             myChart.update();
         }
     }.bind(window));
@@ -72,16 +75,16 @@
         return timeslot.toTimeString().split(' ')[0]
     }
 
-
+    /**
+     * 生成 x 轴刻度
+     */
     function generateLabels(from, to)
     {
-        var labels = [];
-        for (var i = from.getTime(); i < to.getTime();  i += 60 * 1000)
+        for (var i = from.getTime(); i <= to.getTime();  i += 60 * 1000)
         {
             var timeslot = new Date(i);
             labels.push(generateLabel(timeslot));
         }
-        return labels;
     }
 
     function format(data, fieldName)
@@ -139,6 +142,7 @@
            ]
         },
         options: {
+            responsive: true,
             scales: {
               yAxes: [{
                 position: "left",
