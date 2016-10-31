@@ -11,10 +11,11 @@
     <meta name="keywords" content="materialize, admin template, dashboard template, flat admin template, responsive admin template,">
 
     <!-- CORE CSS-->
+
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection">
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="lib/socket.io.js"></script>
     <script type="text/javascript" src="js/Chart.js"></script>
-    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection">
         <link href="css/bootstrap.css" type="text/css" rel="stylesheet" media="screen,projection">
     <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection">
     <!-- CSS for full screen (Layout-2)-->
@@ -216,15 +217,32 @@
      <!-- //////////////////////////////////////////////////////////////////////////// -->
  <section id="content" class="white-text"  >
   <div class="container" >
-    <p style="font-size:20px;margin:20px 10px;">振动加速度3 <img src="images/arrow-rignt.png" alt="" style="height:20px;" />
+    <p style="font-size:20px;margin:20px 10px;">温度传感器1 <img src="images/arrow-rignt.png" alt="" style="height:20px;" />
     </p>
     <div class="row" style="background-color:#1c334f; margin-bottom:20px;">
       <div class="col s2 " >
         <div class="col s2 center" style="margin:20px 10px 5px 10px;position:relative;background:url(images/flottime.png);background-size:237px 194px;height:194px;width:237px;">
-                <div class="center" style="position:absolute;width:30px; height:30px; top: 80px; left: 50px;">
-                  <span style="font-size:54px;color:#6aff7d">15</span>
+                <div class="center" style="position:absolute;width:30px; height:30px; top: 80px; left: 70px;">
+                  <span style="font-size:54px;color:#6aff7d" id="wendu1">15.0</span>
+                  <script type="text/javascript">
+                   var refreshTime = 1000;
+                    setInterval(function(){
+                      $.ajax({
+                               url: "/api/sensor/01/value",
+                               data: {},
+                               success: function(rowdata){
+
+                                  let value = rowdata.temperature;
+                                  //alert(value);
+                                  document.getElementById('wendu1').innerHTML = value.toFixed(1);
+                               }
+                            });
+
+                    }, refreshTime);
+
+                 </script>
                 </div>
-                <div class="center" style="position:absolute;width:30px; height:30px; top: 150px; left: 80px;">
+                <div class="center" style="position:absolute;width:30px; height:30px; top: 150px; left: 100px;">
                   <span style="font-size:24px;">℃</span>
                 </div>
                 <div class="center" style="position:absolute;width:30px; height:30px; top: 190px; left: 10px;">

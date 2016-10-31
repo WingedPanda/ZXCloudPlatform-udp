@@ -222,13 +222,30 @@
       <div class="col s2 " >
         <div class="col s2 center" style="margin:20px 10px 5px 10px;position:relative;background:url(images/flottime.png);background-size:237px 194px;height:194px;width:237px;">
                 <div class="center" style="position:absolute;width:30px; height:30px; top: 80px; left: 50px;">
-                  <span style="font-size:54px;color:#6aff7d">358.3</span>
+                  <span style="font-size:54px;color:#6aff7d" id="jiasudu3">358.3</span>
+                  <script type="text/javascript">
+                   var refreshTime = 1000;
+                    setInterval(function(){
+                      $.ajax({
+                               url: "/api/sensor/42/value",
+                               data: {},
+                               success: function(rowdata){
+
+                                  let value = rowdata.x;
+                                  //alert(value);
+                                  document.getElementById('jiasudu3').innerHTML = value.toFixed(1);
+                               }
+                            });
+
+                    }, refreshTime);
+
+                 </script>
                 </div>
                 <div class="center" style="position:absolute;width:30px; height:30px; top: 150px; left: 80px;">
                   <span style="font-size:24px;">mm/s²</span>
                 </div>
                 <div class="center" style="position:absolute;width:30px; height:30px; top: 190px; left: 10px;">
-                  <span style="font-size:24px;color:#6aff7d">140.7</span>
+                  <span style="font-size:24px;color:#6aff7d">-140.7</span>
                 </div>
                 <div class="center" style="position:absolute;width:30px; height:30px; top: 190px; left: 170px;">
                   <span style="font-size:24px;color:#ff5665">828.9</span>
@@ -305,7 +322,7 @@
 
   </div>
   <div id='content'>
-      <canvas style="height: 300px;" id='chart' ></canvas>
+      <canvas id='chart'  height="500px" width="1500px"></canvas>
   </div>
   <script>
       var step = 1;
@@ -436,14 +453,14 @@
                  },
                  {
                      label: 'y',
-                     borderColor: '#40a7ff',
-                     backgroundColor: 'rgba(64, 167, 255, 0.3)',
+                     borderColor: '#5e39ca',
+                     backgroundColor: 'rgba(94, 57, 202, 0.3)',
                      data: y
                  },
                  {
                      label: 'z',
-                     borderColor: 'red',
-                     backgroundColor: 'red',
+                     borderColor:'#40a7ff',
+                     backgroundColor: 'rgba(64, 167, 255, 0.3)',
                      data:z
                  }
              ]
